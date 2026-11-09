@@ -53,8 +53,6 @@ export function getWeatherInfo(code) {
  * 한국 환경부 기준 미세먼지(PM10) 및 초미세먼지(PM2.5) 등급 평가
  */
 export function getAirQualityStatus(pm10, pm25) {
-  // PM10 기준 (μg/m³): 0~30 좋음, 31~80 보통, 81~150 나쁨, 151~ 매우나쁨
-  // PM2.5 기준 (μg/m³): 0~15 좋음, 16~35 보통, 36~75 나쁨, 76~ 매우나쁨
   let status = '좋음';
   let badgeColor = '#10b981'; // 초록
 
@@ -73,10 +71,24 @@ export function getAirQualityStatus(pm10, pm25) {
 }
 
 /**
- * Open-Meteo 날씨 정보 조회 (현재 날씨 + 시간별 예보 + 7일간 일별 예보)
+ * 자외선 지수(UV Index) 등급 평가
+ */
+export function getUvIndexStatus(uv) {
+  if (uv === undefined || uv === null) {
+    return { status: '정보 없음', color: '#94a3b8' }
+  }
+  if (uv >= 11) return { status: '위험', color: '#7c3aed' }
+  if (uv >= 8) return { status: '매우 높음', color: '#ef4444' }
+  if (uv >= 6) return { status: '높음', color: '#f97316' }
+  if (uv >= 3) return { status: '보통', color: '#eab308' }
+  return { status: '낮음', color: '#10b981' }
+}
+
+/**
+ * Open-Meteo 날씨 정보 조회 (현재 날씨 + UV Index + 시간별 예보 + 일별 예보 및 일출/일몰)
  */
 export async function fetchWeatherData(lat, lon) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,uv_index&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=Asia%2FSeoul`;
 
   try {
     const res = await fetch(url);
@@ -110,7 +122,6 @@ export async function fetchAirQualityData(lat, lon) {
 
 /**
  * Open-Meteo 도시 검색 (Geocoding API)
- * 라틴 영문(Seoul, Busan 등) 검색을 기본 지원합니다.
  */
 export async function searchCities(query) {
   if (!query || query.trim().length < 2) return [];

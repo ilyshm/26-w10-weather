@@ -641,6 +641,72 @@
   color: var(--text-h);
 }
 
+/* 옵션 C: 상세 기상 지표 (자외선 지수, 강수 확률, 일출/일몰) */
+.weather-extra-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.extra-metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--code-bg);
+}
+
+.extra-metric-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.extra-icon {
+  flex-shrink: 0;
+}
+
+.extra-icon.uv-icon { color: #f59e0b; }
+.extra-icon.rain-icon { color: #0284c7; }
+.extra-icon.sunrise-icon { color: #f97316; }
+.extra-icon.sunset-icon { color: #a855f7; }
+
+.extra-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.extra-metric-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.extra-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.extra-subtext {
+  font-size: 11px;
+  color: var(--text);
+}
+
+.uv-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
 /* --------------------------------------------------------------------------
    8. 미세먼지 카드 (AirQualityCard)
    -------------------------------------------------------------------------- */

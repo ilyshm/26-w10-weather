@@ -253,6 +253,7 @@ export default function App() {
                 cityName={selectedCity.name}
                 current={currentWeather}
                 weatherInfo={weatherInfo}
+                todayDaily={weatherData?.daily}
                 tempUnit={tempUnit}
               />
               <AirQualityCard
