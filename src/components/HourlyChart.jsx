@@ -3,10 +3,17 @@ import { Clock } from 'lucide-react'
 import { getWeatherInfo } from '../api/weather'
 import WeatherIcon from './WeatherIcon'
 
-export default function HourlyChart({ hourly }) {
+export default function HourlyChart({ hourly, tempUnit = 'C' }) {
   // 현재 시각 기준 향후 24시간 데이터 추출
   const chartData = useMemo(() => {
     if (!hourly || !hourly.time || !hourly.temperature_2m) return []
+
+    const convertTemp = (celsius) => {
+      if (tempUnit === 'F') {
+        return Math.round((celsius * 9) / 5 + 32)
+      }
+      return Math.round(celsius)
+    }
 
     const now = new Date()
     const currentIsoHour = now.toISOString().slice(0, 13) // "YYYY-MM-DDTHH"
@@ -30,13 +37,13 @@ export default function HourlyChart({ hourly }) {
       selectedPoints.push({
         time: isNow ? '지금' : `${hour}시`,
         fullTime: `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일 ${hour}시`,
-        temp: Math.round(hourly.temperature_2m[idx]),
+        temp: convertTemp(hourly.temperature_2m[idx]),
         code: hourly.weather_code ? hourly.weather_code[idx] : 0,
       })
     }
 
     return selectedPoints
-  }, [hourly])
+  }, [hourly, tempUnit])
 
   if (chartData.length === 0) return null
 
@@ -44,7 +51,7 @@ export default function HourlyChart({ hourly }) {
   const temps = chartData.map((d) => d.temp)
   const minTemp = Math.min(...temps)
   const maxTemp = Math.max(...temps)
-  const tempRange = Math.max(maxTemp - minTemp, 4) // 최소 4도 차이 유지 (너무 평평해지는 것 방지)
+  const tempRange = Math.max(maxTemp - minTemp, 4) // 최소 4도 차이 유지
 
   const pointWidth = 56
   const chartHeight = 170
@@ -55,7 +62,6 @@ export default function HourlyChart({ hourly }) {
 
   const points = chartData.map((d, i) => {
     const x = i * pointWidth + pointWidth / 2
-    // 기온이 높을수록 y좌표가 상단(낮은 값)으로 가도록
     const y = paddingTop + usableHeight - ((d.temp - minTemp) / tempRange) * usableHeight
     return { ...d, x, y }
   })
@@ -74,7 +80,7 @@ export default function HourlyChart({ hourly }) {
       <div className="card-top">
         <div>
           <span className="card-badge">24시간 예보</span>
-          <h2 className="city-heading">시간대별 기온 변화</h2>
+          <h2 className="city-heading">시간대별 기온 변화 (°{tempUnit})</h2>
         </div>
         <div className="chart-header-hint">
           <Clock size={16} />
@@ -140,7 +146,7 @@ export default function HourlyChart({ hourly }) {
                   strokeWidth="2.5"
                 />
 
-                {/* 날씨 미니 아이콘 위치 가이드 */}
+                {/* 날씨 미니 아이콘 */}
                 <foreignObject x={p.x - 10} y={chartHeight - 40} width="20" height="20">
                   <div className="mini-weather-icon">
                     <WeatherIcon name={weather.icon} size={15} color={weather.color} />

@@ -4,14 +4,21 @@ import WeatherIcon from './WeatherIcon'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
-export default function WeeklyForecast({ daily }) {
+export default function WeeklyForecast({ daily, tempUnit = 'C' }) {
   if (!daily || !daily.time) return null
 
+  const convertTemp = (celsius) => {
+    if (tempUnit === 'F') {
+      return Math.round((celsius * 9) / 5 + 32)
+    }
+    return Math.round(celsius)
+  }
+
   // 이번 주 전체 최저/최고 기온 (범위 바 렌더링용)
-  const minTemps = daily.temperature_2m_min || []
-  const maxTemps = daily.temperature_2m_max || []
-  const overallMin = Math.min(...minTemps)
-  const overallMax = Math.max(...maxTemps)
+  const rawMinTemps = daily.temperature_2m_min || []
+  const rawMaxTemps = daily.temperature_2m_max || []
+  const overallMin = Math.min(...rawMinTemps)
+  const overallMax = Math.max(...rawMaxTemps)
   const totalRange = Math.max(overallMax - overallMin, 1)
 
   const items = daily.time.map((timeStr, idx) => {
@@ -26,13 +33,15 @@ export default function WeeklyForecast({ daily }) {
 
     const weatherCode = daily.weather_code ? daily.weather_code[idx] : 0
     const weather = getWeatherInfo(weatherCode)
-    const min = Math.round(minTemps[idx])
-    const max = Math.round(maxTemps[idx])
+    const rawMin = rawMinTemps[idx]
+    const rawMax = rawMaxTemps[idx]
+    const min = convertTemp(rawMin)
+    const max = convertTemp(rawMax)
     const rainProb = daily.precipitation_probability_max ? daily.precipitation_probability_max[idx] : 0
 
     // 상대적 기온 바 위치 계산 (%)
-    const barLeft = Math.max(0, ((min - overallMin) / totalRange) * 100)
-    const barWidth = Math.max(8, ((max - min) / totalRange) * 100)
+    const barLeft = Math.max(0, ((rawMin - overallMin) / totalRange) * 100)
+    const barWidth = Math.max(8, ((rawMax - rawMin) / totalRange) * 100)
 
     return {
       dateStr: `${month}.${day}`,
@@ -51,7 +60,7 @@ export default function WeeklyForecast({ daily }) {
       <div className="card-top">
         <div>
           <span className="card-badge">7일간 예보</span>
-          <h2 className="city-heading">주간 날씨 전망</h2>
+          <h2 className="city-heading">주간 날씨 전망 (°{tempUnit})</h2>
         </div>
         <div className="chart-header-hint">
           <Calendar size={16} />
