@@ -61,7 +61,7 @@
 ## 🔗 5. 실행 및 배포 링크
 
 - **GitHub Pages 배포 URL**: [https://ilyshm.github.io/26-w10-weather/](https://ilyshm.github.io/26-w10-weather/)
-- **Netlify 배포 URL**: *(Netlify 콘솔에서 배포 후 기재)*
+- **Netlify 배포 URL**: [https://incandescent-pegasus-0fa535.netlify.app/](https://incandescent-pegasus-0fa535.netlify.app/)
 
 ---
 
